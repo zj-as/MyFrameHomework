@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.StudentMapper">
+    
+    <select id="queryStudentClassByArray" resultType="java.lang.String">
+        SELECT class_name FROM student s, class c
+        WHERE s.class_no = c.class_no
+          AND name IN
+        <foreach collection="array" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="queryStudentClassByList" resultType="java.lang.String">
+        SELECT class_name FROM student s, class c
+        WHERE s.class_no = c.class_no
+        AND name IN
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item.name}
+        </foreach>
+    </select>
+
+</mapper>

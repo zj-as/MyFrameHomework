@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 引入外部属性文件配置数据库连接池 -->
+    <!-- ① 引入外部属性文件 -->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!-- ② 声明数据源DataSource -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <!-- set注入给DataSource提供连接数据库信息 -->
+        <property name="driverClassName" value="${jdbc.mysql.driver}"/>
+        <property name="url" value="${jdbc.mysql.url}"/>
+        <property name="username" value="${jdbc.mysql.username}"/>
+        <property name="password" value="${jdbc.mysql.password}"/>
+    </bean>
+
+    <!-- 声明MyBatis中提供的SqlSessionFactoryBean类，这个类内部创建SqlSessionFactory对象 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- set注入，把数据库连接池赋值给了dataSource属性 -->
+        <property name="dataSource" ref="dataSource"/>
+        <!-- MyBatis主配置文件的配置 -->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+    </bean>
+
+    <!-- 创建Dao对象，使用SqlSession的 getMapper(Student.class) -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!-- 指定SqlSessionFactory对象的id -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <!-- 指定包名，包名是Dao接口所在的包名 -->
+        <property name="basePackage" value="mapper"/>
+    </bean>
+
+    <bean id="student1" class="entity.Student">
+        <property name="name" value="阿沙"/>
+    </bean>
+    <bean id="student2" class="entity.Student">
+        <property name="name" value="页老师"/>
+    </bean>
+    <bean id="studentQueryCriteria" class="entity.QueryCriteria">
+        <!-- 数组类型注入 -->
+        <property name="studentNames">
+            <array>
+                <value>阿沙</value>
+                <value>页老师</value>
+            </array>
+        </property>
+
+        <!-- List集合类型注入 -->
+        <property name="studentList">
+            <list>
+                <ref bean="student1"/>
+                <ref bean="student2"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="studentService" class="service.impl.StudentServiceImpl">
+        <property name="studentMapper" ref="studentMapper"/>
+    </bean>
+
+</beans>
