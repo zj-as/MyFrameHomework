@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/">
+
+    <!-- 多对一查询，多个学生在一个班 -->
+    <resultMap id="manyToOneMap" type="Student">
+        <id column="no" property="no"/>
+        <result column="name" property="name"/>
+        <result column="class_no" property="classNo"/>
+        <association property="clazz" javaType="Clazz">
+            <id column="class_no" property="classNo"/>
+            <result column="class_name" property="className"/>
+        </association>
+    </resultMap>
+    <select id="manyToOne" resultMap="manyToOneMap">
+        SELECT s.no, s.name, s.class_no, c.class_name
+        FROM student s LEFT JOIN class c
+        ON s.class_no = c.class_no
+        ORDER BY s.no
+    </select>
+
+    <!-- 一对多查询，一个班有多个学生 -->
+    <resultMap id="oneToManyMap" type="Clazz">
+        <id column="class_no" property="classNo"/>
+        <result column="class_name" property="className"/>
+        <collection property="studentList" ofType="Student">
+            <id column="no" property="no"/>
+            <result column="name" property="name"/>
+            <result column="class_no" property="classNo"/>
+        </collection>
+    </resultMap>
+    <select id="oneToMany" resultMap="oneToManyMap">
+        SELECT c.class_no, c.class_name, s.no, s.name
+        FROM student s RIGHT JOIN class c
+        ON s.class_no = c.class_no
+        ORDER BY c.class_no
+    </select>
+
+    <!-- 综合查询 -->
+    <resultMap id="comprehensiveQueryMap" type="Orders">
+        <id column="order_id" property="orderId"/>
+        <result column="employee_id" property="employeeId"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="order_time" property="orderTime"/>
+        <!-- 多条订单对应一个顾客 -->
+        <association property="customer" javaType="Customer">
+            <id column="customer_id" property="customerId"/>
+            <result column="customer_name" property="customerName"/>
+        </association>
+        <!-- 多条订单对应一个员工 -->
+        <association property="employee" javaType="Employee">
+            <id column="employee_id" property="employeeId"/>
+            <result column="employee_name" property="employeeName"/>
+        </association>
+        <!-- 一条订单可以有多条商品交易信息 -->
+        <collection property="orderDetailList" ofType="OrderDetail">
+            <id column="order_detail_id" property="orderDetailId"/>
+            <id column="order_id" property="orderId"/>
+            <id column="goods_id" property="goodsId"/>
+            <result column="amount" property="amount"/>
+            <result column="sum" property="sum"/>
+            <!-- 多条商品交易信息对应一件商品 -->
+            <association property="goods" javaType="Goods">
+                <id column="goods_id" property="goodsId"/>
+                <result column="goods_name" property="goodsName"/>
+                <result column="goods_price" property="goodsPrice"/>
+            </association>
+        </collection>
+    </resultMap>
+    <select id="comprehensiveQuery" resultMap="comprehensiveQueryMap">
+        SELECT od.order_detail_id, o.order_id, c.customer_name, e.employee_name, g.goods_name, g.goods_price, od.amount, od.sum, o.order_time
+        FROM orders o, order_detail od, goods g, customer c, employee e
+        WHERE o.order_id = od.order_id
+          AND o.customer_id = c.customer_id
+          AND o.employee_id = e.employee_id
+          AND od.goods_id = g.goods_id
+        ORDER BY od.order_detail_id
+    </select>
+    
+</mapper>
