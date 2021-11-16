@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!-- 指定properties文件的位置，从类路径根开始找文件 -->
+    <properties resource="jdbc.properties"/>
+
+    <!-- 控制MyBatis全局行为 -->
+    <settings>
+        <!-- 设置MyBatis输出日志 -->
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
+
+    <!-- 设置别名 -->
+    <typeAliases>
+        <package name="entity"/>
+    </typeAliases>
+
+    <!-- 设置使用的数据库 -->
+    <environments default="localDB">
+        <!-- 本地数据库 -->
+        <environment id="localDB">
+            <!-- 设置数据库的事务类型 -->
+            <transactionManager type="JDBC"/>
+            <!-- 设置数据源，连接数据库 -->
+            <dataSource type="POOLED">
+                <!-- 配置数据库的基本信息 -->
+                <property name="driver" value="${jdbc.mysql.driver}"/>
+                <property name="url" value="${jdbc.mysql.url}&amp;characterEncoding=utf8"/>
+                <property name="username" value="${jdbc.mysql.username}"/>
+                <property name="password" value="${jdbc.mysql.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <!-- sql mapper（sql映射文件）的位置 -->
+    <mappers>
+        <mapper resource="mapper/StudentMapper.xml"/>
+        <mapper class="dao.StudentDao"/>
+    </mappers>
+
+</configuration>
