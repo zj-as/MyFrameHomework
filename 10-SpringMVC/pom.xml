@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>pers.zj.homework</groupId>
+  <artifactId>10-SpringMVC</artifactId>
+  <version>1.0.0</version>
+  <packaging>war</packaging>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+
+  <dependencies>
+    <!-- 导入SpringMVC依赖 -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>5.2.16.RELEASE</version>
+    </dependency>
+
+    <!-- 导入Servlet依赖 -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>4.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- 导入EL表达式的依赖 -->
+    <dependency>
+      <groupId>javax.el</groupId>
+      <artifactId>javax.el-api</artifactId>
+      <version>3.0.0</version>
+    </dependency>
+
+    <!-- 导入JSR-303校验的依赖包 -->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <version>6.0.16.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator-annotation-processor</artifactId>
+      <version>6.0.16.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml</groupId>
+      <artifactId>classmate</artifactId>
+      <version>1.5.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging</artifactId>
+      <version>3.4.0.Final</version>
+    </dependency>
+  </dependencies>
+
+</project>
