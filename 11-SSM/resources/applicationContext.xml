@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!-- 声明组件扫描器 -->
+    <context:component-scan base-package="service"/>
+
+    <!-- 引入外部属性文件配置数据库连接池 -->
+    <!-- ① 引入外部属性文件 -->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!-- ② 声明数据源DataSource -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <!-- set注入给DataSource提供连接数据库信息 -->
+        <property name="driverClassName" value="${jdbc.mysql.driverClass}"/>
+        <property name="url" value="${jdbc.mysql.url}"/>
+        <property name="username" value="${jdbc.mysql.user}"/>
+        <property name="password" value="${jdbc.mysql.password}"/>
+        <!-- 设置事务是否自动提交 -->
+        <property name="defaultAutoCommit" value="${jdbc.mysql.defaultAutoCommit}"/>
+    </bean>
+
+    <!-- 声明MyBatis中提供的SqlSessionFactoryBean类，这个类内部创建SqlSessionFactory对象 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 使用set()方法把数据库连接池赋值给dataSource属性 -->
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 设置MyBatis主配置文件的配置 -->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+    </bean>
+
+    <!-- 声明MyBatis的扫描器，创建Dao对象 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <!-- 指定包名，包名是Dao接口所在的包名 -->
+        <property name="basePackage" value="mapper"/>
+    </bean>
+
+    <!-- 创建事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 注入数据源 -->
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <!-- 配置通知 -->
+    <tx:advice id="txadvice">
+        <!-- 配置事务参数 -->
+        <tx:attributes>
+            <!-- 指定哪种规则的方法上面添加事务 -->
+            <tx:method name="user*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!-- 配置切入点和切面 -->
+    <aop:config>
+        <!-- 配置切入点 -->
+        <aop:pointcut id="pt" expression="execution(* service.impl.UserServiceImpl.*(..))"/>
+        <!-- 配置切面 -->
+        <aop:advisor advice-ref="txadvice" pointcut-ref="pt"></aop:advisor>
+    </aop:config>
+
+</beans>
